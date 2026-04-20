@@ -2,7 +2,7 @@ import requests
 import json
 
 class TruthEngine:
-    """Pillar 11: OSINT & Reality Verification"""
+    """Pillar 11 & 17: OSINT, Reality Verification & Dark Pool Scanning"""
     
     def __init__(self):
         self.trust_scores = {
@@ -10,18 +10,18 @@ class TruthEngine:
             'Xinhua': 0.5, 'TASS': 0.5, 'PressTV': 0.4
         }
 
+    def analyze_institutional_absorption(self, bid_volume, ask_volume, price_delta):
+        """
+        PILLAR 17: Detect when price is stationary despite massive volume (Iceberg)
+        Logic: If volume > threshold AND price change < 0.05%, absorption is occurring.
+        """
+        if bid_volume > ask_volume * 2 and abs(price_delta) < 0.0005:
+            return "ICEBERG_BUY_DETECTED: Institutional whale is accumulating quietly."
+        elif ask_volume > bid_volume * 2 and abs(price_delta) < 0.0005:
+            return "ICEBERG_SELL_DETECTED: Institutional whale is distributing quietly."
+        return "NORMAL_LIQUIDITY"
+
     def verify_physical_movement(self, location_key):
-        """Checks real-world sensors (Satellite/AIS) to verify news"""
         # Logic to query MarineTraffic or similar APIs
-        # Example: if news says 'Hormuz Closed', check ship density
         print(f"[TRUTH_ENGINE] Verifying physical movement at {location_key}...")
         return {"status": "OPEN", "vessel_count": 42, "confidence": 0.98}
-
-    def resolve_contradiction(self, news_a, news_b):
-        """Compares two news items and decides which is more likely true"""
-        score_a = self.trust_scores.get(news_a['source'], 0.5)
-        score_b = self.trust_scores.get(news_b['source'], 0.5)
-        
-        if news_a['content'] != news_b['content']:
-            return news_a if score_a > score_b else news_b
-        return news_a
